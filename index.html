@@ -74,34 +74,30 @@
     }
     /* Mobile-first improvements */
     @media (max-width: 640px) {
-      html, body { font-size: 17px; }
+      html, body { font-size: 16px; }
       .brand { font-size: 18px; }
+      .container { padding: 0 12px; }
       nav { overflow-x: auto; -webkit-overflow-scrolling: touch; }
       nav a { white-space: nowrap; }
-      table { min-width: 0; }
+      .content { padding: 12px; }
+      table { min-width: 0; table-layout: fixed; width: 100%; }
       thead { display: none; }
       table, tbody, tr, td { display: block; width: 100%; }
       tbody tr {
         background: #4a1821;
         border: 1px solid var(--border);
         border-radius: 12px;
-        padding: 10px;
+        padding: 10px 10px 12px;
         margin: 10px 0;
       }
-      /* Grid inside each row: name + price on first line; ingredients below */
-      tbody tr {
-        display: grid;
-        grid-template-columns: 1fr auto;
-        grid-template-areas:
-          "name price"
-          "desc desc";
-        gap: 6px 10px;
-      }
-      td:nth-child(1) { grid-area: name; font-weight: 900; font-size: 18px; padding: 0; }
-      td:nth-child(2) { grid-area: desc; color: #ffe1cc; padding: 0; }
-      td:nth-child(3) { grid-area: price; text-align: right; padding: 0; }
-      .price { font-size: 15px; padding: 6px 10px; }
-      .content { padding: 14px; }
+      td { padding: 0; overflow-wrap: anywhere; word-break: break-word; }
+      /* 1º TD = nome */
+      td:first-child { font-weight: 900; font-size: 18px; margin-bottom: 4px; }
+      /* Último TD = preço (funciona para tabelas com 2 ou 3 colunas) */
+      td:last-child { margin-top: 8px; }
+      td:last-child .price { font-size: 15px; padding: 6px 10px; }
+      /* Caso haja 3 colunas, o do meio vira descrição */
+      td:nth-child(2):not(:last-child) { color: #ffe1cc; opacity: .95; }
       .fab { right: 12px; bottom: 12px; }
       .fab a { padding: 12px 14px; }
     }
