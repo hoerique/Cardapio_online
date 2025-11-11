@@ -1,0 +1,440 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cardápio Online</title>
+  <style>
+    :root {
+      /* Paleta inspirada no template (bordô / laranja / amarelo) */
+      --brand-bordo: #8a2030;
+      --brand-bordo-700: #6f1a26;
+      --brand-orange: #f59f00;
+      --brand-yellow: #ffd166;
+      --bg: #2b0d13;             /* fundo quente e escuro para contraste */
+      --panel: #3a131a;          /* cartão */
+      --text: #fff6f0;
+      --muted: #f2c8b8;
+      --accent: var(--brand-yellow);
+      --accent-2: var(--brand-orange);
+      --border: #5a1d28;
+      --table-stripe: #43171f;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji"; line-height: 1.5; }
+    a { color: var(--accent-2); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    header {
+      position: sticky; top: 0; z-index: 10;
+      background: linear-gradient(180deg, rgba(138,32,48,.96), rgba(111,26,38,.9));
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: saturate(1.5) blur(8px);
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 0 16px; }
+    .header-inner { display: flex; align-items: center; gap: 16px; padding: 12px 0; }
+    .brand { display:flex; align-items:center; gap:10px; font-weight: 900; letter-spacing: .3px; font-size: 20px; }
+    .brand img { height: 36px; width: 36px; object-fit: contain; border-radius: 6px; border: 1px solid var(--border); background:#2b0d13; }
+    .brand .brand-name { color: var(--brand-yellow); text-shadow: 0 1px 0 rgba(0,0,0,.3); }
+    nav { margin-left: auto; display: flex; gap: 10px; flex-wrap: wrap; }
+    nav a { padding: 10px 12px; border-radius: 999px; border:1px solid #7a222f; background:#4a1821; color:#ffe9dc; font-weight:700; }
+    nav a:hover { background: #5a1d28; text-decoration: none; border-color:#8a2030; }
+    main { padding: 24px 0 64px; }
+    section { margin: 28px 0; background: var(--panel); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+    .section-header { padding: 18px 18px 8px; border-bottom: 1px solid var(--border); background:
+      linear-gradient(180deg, rgba(138,32,48,1), rgba(111,26,38,1)); position: relative; }
+    .section-header::after{
+      content:""; position:absolute; left:0; right:0; bottom:0; height:3px;
+      background: linear-gradient(90deg, var(--brand-yellow), var(--brand-orange));
+      opacity:.9;
+    }
+    h2 { margin: 0; font-size: 26px; }
+    .section-desc { margin: 6px 0 0; color: var(--muted); font-size: 15px; }
+    .content { padding: 18px; overflow-x: auto; }
+    .subnav { display:flex; gap:8px; flex-wrap:wrap; margin: 4px 0 14px; }
+    .subnav a { padding:8px 12px; border-radius:999px; background:#4a1821; border:1px solid #7a222f; color:#ffe9dc; font-weight:700; }
+    .subnav a:hover { background:#5a1d28; }
+    table { width: 100%; border-collapse: collapse; min-width: 520px; font-size: 16px; }
+    th, td { text-align: left; padding: 14px 10px; vertical-align: top; }
+    th { font-size: 13px; color: #ffe1cc; font-weight: 800; border-bottom: 2px solid var(--brand-orange); text-transform: uppercase; letter-spacing:.4px; }
+    tbody tr { border-bottom: 1px dashed #22283a; }
+    tbody tr:nth-child(2n) { background: var(--table-stripe); }
+    .price { white-space: nowrap; font-weight: 800; color: #38140c; background: linear-gradient(180deg, var(--brand-yellow), #ffb703); padding:6px 10px; border-radius:999px; display:inline-block; border:1px solid #8a5011; }
+    .badge { display: inline-block; padding: 2px 8px; font-size: 12px; border-radius: 999px; background: #1f2536; border: 1px solid var(--border); color: var(--muted); margin-left: 8px; }
+    footer { color: var(--muted); font-size: 13px; text-align: center; padding: 28px 0 48px; }
+    .grid { display: grid; grid-template-columns: 1fr; gap: 18px; }
+    .cta-bar { background:#4a1821; border-top:1px solid var(--border); border-bottom:1px solid var(--border); }
+    .cta-inner { display:flex; gap:12px; align-items:center; justify-content:center; padding:10px 0; flex-wrap:wrap; }
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:999px; font-weight:800; border:1px solid #7a222f; background:#5a1d28; color:#ffe9dc; }
+    .btn.whatsapp { background: linear-gradient(90deg, #25d366, #1ebe5d); border-color:#146d3a; color:#081b0f; }
+    .btn.instagram { background: linear-gradient(90deg, #ff5a5f, #f77737, #f59f00); border-color:#8a3a1f; }
+    .fab { position: fixed; right: 18px; bottom: 18px; z-index: 20; }
+    .fab a { box-shadow: 0 6px 20px rgba(0,0,0,.35); }
+    @media (min-width: 960px) {
+      .grid { grid-template-columns: 1fr 1fr; }
+    }
+    /* Mobile-first improvements */
+    @media (max-width: 640px) {
+      html, body { font-size: 17px; }
+      .brand { font-size: 18px; }
+      nav { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      nav a { white-space: nowrap; }
+      table { min-width: 0; }
+      thead { display: none; }
+      table, tbody, tr, td { display: block; width: 100%; }
+      tbody tr {
+        background: #4a1821;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 10px;
+        margin: 10px 0;
+      }
+      /* Grid inside each row: name + price on first line; ingredients below */
+      tbody tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        grid-template-areas:
+          "name price"
+          "desc desc";
+        gap: 6px 10px;
+      }
+      td:nth-child(1) { grid-area: name; font-weight: 900; font-size: 18px; padding: 0; }
+      td:nth-child(2) { grid-area: desc; color: #ffe1cc; padding: 0; }
+      td:nth-child(3) { grid-area: price; text-align: right; padding: 0; }
+      .price { font-size: 15px; padding: 6px 10px; }
+      .content { padding: 14px; }
+      .fab { right: 12px; bottom: 12px; }
+      .fab a { padding: 12px 14px; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container header-inner">
+      <div class="brand">
+        <img src="logo.png" alt="Logotipo da Pizzaria" onerror="this.style.display='none'">
+        <span class="brand-name">Pizzaria Caracol</span>
+      </div>
+      <nav aria-label="Navegação principal">
+        <a href="#hamburgueres">Hambúrgueres</a>
+        <a href="#pizzas">Pizzas</a>
+        <a href="#bebidas">Bebidas</a>
+      </nav>
+    </div>
+  </header>
+  <div class="cta-bar">
+    <div class="container cta-inner">
+      <a class="btn whatsapp" href="https://wa.me/5589981417129" target="_blank" rel="noopener">WhatsApp: (89) 9 8141-7129</a>
+      <a class="btn instagram" href="https://instagram.com/pizzaria_caracolpi" target="_blank" rel="noopener">@pizzaria_caracolpi</a>
+    </div>
+  </div>
+  <main class="container">
+    <!-- Hambúrgueres e Lanches -->
+    <section id="hamburgueres" aria-labelledby="title-hamburgueres">
+      <div class="section-header">
+        <h2 id="title-hamburgueres">Hambúrgueres e Lanches</h2>
+        <p class="section-desc">Opções tradicionais, artesanais e especiais.</p>
+      </div>
+      <div class="content">
+        <div class="subnav" aria-label="Categorias de Hambúrgueres">
+          <a href="#tradicionais">Tradicionais</a>
+          <a href="#artesanais">Artesanais</a>
+          <a href="#especiais">Especiais</a>
+        </div>
+        <div class="grid">
+          <div>
+            <h3 id="tradicionais" style="margin:0 0 8px 0;">Lanches Tradicionais <span class="badge">clássicos</span></h3>
+            <table aria-label="Lanches Tradicionais">
+              <thead>
+                <tr>
+                  <th>Nome do Lanche</th>
+                  <th>Ingredientes</th>
+                  <th>Preço</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>SANDUINHA</td><td>pão, alface, tomate, presunto, queijo, batata palha.</td><td class="price">R$ 12,00</td></tr>
+                <tr><td>X-MEXICANO</td><td>pão, molho, alface, tomate, frango, carne, presunto, queijo e ovo.</td><td class="price">R$ 16,00</td></tr>
+                <tr><td>X-FRANGO</td><td>pão, molho, alface, tomate, frango, presunto, queijo.</td><td class="price">R$ 15,00</td></tr>
+                <tr><td>MISTO</td><td>pão, presunto, queijo e pão.</td><td class="price">R$ 8,00</td></tr>
+                <tr><td>X-SALADA</td><td>pão, molho, tomate, alface, carne, presunto e queijo.</td><td class="price">R$ 13,00</td></tr>
+                <tr><td>X-BURGUER</td><td>pão, molho, alface, tomate, carne, ovo, presunto e queijo.</td><td class="price">R$ 14,00</td></tr>
+                <tr><td>X-CALABRESA</td><td>pão, molho, alface, tomate, carne, calabresa, presunto e queijo.</td><td class="price">R$ 15,00</td></tr>
+                <tr><td>X-BACON</td><td>pão, molho, tomate, carne, bacon, presunto e queijo.</td><td class="price">R$ 15,00</td></tr>
+                <tr><td>X-EGG</td><td>pão, alface, tomate, ovo, bacon e carne.</td><td class="price">R$ 13,00</td></tr>
+                <tr><td>MODA DA CASA</td><td>pão, molho, alface, tomate, carne, calabresa, bacon, presunto, queijo e catupiry.</td><td class="price">R$ 15,00</td></tr>
+                <tr><td>X-AMERICANO</td><td>pão, molho, alface, tomate, carne, calabresa, bacon, presunto e queijo.</td><td class="price">R$ 15,00</td></tr>
+                <tr><td>X-ITALIANO</td><td>pão, molho, alface, tomate, carne, bacon, frango, cheddar, cebola, presunto e queijo.</td><td class="price">R$ 16,00</td></tr>
+                <tr><td>CATUFRANGO</td><td>carne, frango, catupiry, presunto e queijo.</td><td class="price">R$ 15,00</td></tr>
+                <tr><td>X-TUDO</td><td>pão, molho, alface, tomate, carne, frango, ovo, presunto, queijo, bacon, calabresa, tomate, cebola, catupiry e cheddar.</td><td class="price">R$ 20,00</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div>
+            <h3 id="artesanais" style="margin:0 0 8px 0;">Hambúrgueres Artesanais <span class="badge">com cheddar especial</span></h3>
+            <table aria-label="Hambúrgueres Artesanais">
+              <thead>
+                <tr>
+                  <th>Nome do Lanche</th>
+                  <th>Ingredientes</th>
+                  <th>Preço</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>CLÁSSICO</td><td>pão, cheddar especial, carne artesanal, queijo mussarela, presunto, alface, tomate, molho Caracol.</td><td class="price">R$ 22</td></tr>
+                <tr><td>BIG CHEDDAR</td><td>pão, cheddar especial (2 camadas), carne artesanal, bacon, alface, tomate, molho Caracol.</td><td class="price">R$ 24</td></tr>
+                <tr><td>DUPLO CHEDDAR</td><td>pão, 2 carnes artesanais, 2 camadas de cheddar especial, bacon, alface, tomate, molho Caracol.</td><td class="price">R$ 28</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div style="margin-top:18px;">
+          <h3 id="especiais" style="margin:0 0 8px 0;">Especiais Burger <span class="badge">premium</span></h3>
+          <table aria-label="Especiais Burger">
+            <thead>
+              <tr>
+                <th>Nome do Lanche</th>
+                <th>Ingredientes</th>
+                <th>Preço</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>X-SOBRENATURAL</td><td>Pão, molho Caracol, frango desfiado, catupiry original, carne de hambúrguer, bacon, calabresa, cebola roxa, presunto, queijo mussarela e orégano.</td><td class="price">R$ 20</td></tr>
+              <tr><td>X-CHEDDAR BACON</td><td>Pão, molho Caracol, milho, alface, tomate, carne de hambúrguer, presunto, queijo mussarela, orégano, cebola roxa, cheddar especial, bacon inteiro e batata palha.</td><td class="price">R$ 20</td></tr>
+              <tr><td>X-3 QUEIJOS</td><td>Pão, molho Caracol, milho, frango desfiado, catupiry original, carne de hambúrguer, presunto, queijo mussarela, orégano, cheddar especial, bacon e batata palha.</td><td class="price">R$ 20</td></tr>
+              <tr><td>X-PÉ DE SERRA 1</td><td>Pão, molho Caracol, carne seca, catupiry original, carne de hambúrguer, presunto, queijo mussarela, orégano e caipira.</td><td class="price">R$ 20</td></tr>
+              <tr><td>X-PÉ DE SERRA 2</td><td>Pão, molho Caracol, carne seca, catupiry original, carne de hambúrguer, presunto, queijo mussarela, orégano e ovo caipira.</td><td class="price">R$ 20</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pizzas -->
+    <section id="pizzas" aria-labelledby="title-pizzas">
+      <div class="section-header">
+        <h2 id="title-pizzas">Pizzas</h2>
+        <p class="section-desc">Salgadas e doces, nos tamanhos P, M e G.</p>
+      </div>
+      <div class="content">
+        <h3 style="margin:0 0 8px 0;">Pizzas Salgadas</h3>
+        <table aria-label="Pizzas Salgadas">
+          <thead>
+            <tr>
+              <th>Nome da Pizza</th>
+              <th>Ingredientes</th>
+              <th>Preços</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>CHEDDAR</td><td>molho, frango desfiado, molho, cheddar, bacon e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>FRANGO</td><td>molho, frango desfiado, mussarela, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>MARGUERITA</td><td>molho, mussarela, tomate, manjericão e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>MILHO VERDE</td><td>molho, milho verde, mussarela e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>MUSSARELA</td><td>molho, mussarela e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>PAULISTA</td><td>molho, mussarela, calabresa, presunto, catupiry, cebola, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>NAPOLITANA</td><td>molho, mussarela, tomate, parmesão e manjericão.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>PORTUGUESA 1</td><td>molho, presunto, ovo, cebola, mussarela e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>PORTUGUESA 2</td><td>molho, presunto, ervilha, ovo, pimentão, cebola, mussarela e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>CALABRESA</td><td>molho, calabresa fatiada, mussarela, cebola, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>TOSCANA 1</td><td>molho, mussarela, calabresa fatiada, cebola, tomate e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>TOSCANA 2</td><td>molho, mussarela, calabresa fatiada, catupiry, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>TROPICAL</td><td>molho, mussarela, cebola, tomate, presunto, azeite, calabresa, bacon e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>DOIS QUEIJOS</td><td>molho, mussarela, catupiry, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>TRÊS QUEIJOS</td><td>molho, mussarela, catupiry, parmesão, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>A MODA DA CASA</td><td>molho, mussarela, presunto, ervilha, milho verde e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>A MODO DO CHEFE</td><td>molho, mussarela, calabresa, milho verde, frango e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>A MODO DO PIZZAIOLO</td><td>molho, mussarela, presunto, calabresa, frango, milho, ervilha, bacon e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>BRÓCOLIS</td><td>molho, mussarela, presunto, calabresa, frango, milho, ervilha, bacon e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>MEXICANA</td><td>Molho, calabresa moída, mussarela, cebola, ovo e bacon.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>BACON</td><td>Molho, mussarela, bacon, cebola, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>BATATA</td><td>Molho, mussarela, calabresa moída, ovo, cebola, pimenta, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>BAURU</td><td>Molho, mussarela, presunto, tomate, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>CARIOCA</td><td>Molho, mussarela, frango desfiado, milho, catupiry, bacon e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>CATUFRANGO</td><td>Molho, frango desfiado, catupiry, orégano e azeitona.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>O MODO DO FREGUÊS</td><td>Recheios de sua preferência.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>CALACATU</td><td>Molho, mussarela, calabresa, catupiry, tomate, parmesão e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>CARNE SECA</td><td>Molho, mussarela, carne seca, cebola, catupiry e orégano.</td><td class="price">P: R$ 32,00 | M: R$ 39,00 | G: R$ 48,00</td></tr>
+            <tr><td>FLAMENGUISTA</td><td>Molho, mussarela, calabresa, frango, milho, cebola, catupiry, bacon e orégano.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>NORDESTINA</td><td>Molho, mussarela, pimenta, carne seca, tomate, orégano.</td><td class="price">P: R$ 32,00 | M: R$ 39,00 | G: R$ 48,00</td></tr>
+          </tbody>
+        </table>
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Pizzas Doces</h3>
+        <table aria-label="Pizzas Doces">
+          <thead>
+            <tr>
+              <th>Nome da Pizza</th>
+              <th>Ingredientes</th>
+              <th>Preços</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>ROMEU E JULIETA</td><td>Queijo, mussarela, goiabada e creme de leite.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>BANANA</td><td>Banana, mussarela, e canela.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>PRESTÍGIO</td><td>Chocolate preto, leite condensado e morango.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+            <tr><td>SENSAÇÃO</td><td>Chocolate preto, leite condensado e morango.</td><td class="price">P: R$ 30,00 | M: R$ 37,00 | G: R$ 45,00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Bebidas -->
+    <section id="bebidas" aria-labelledby="title-bebidas">
+      <div class="section-header">
+        <h2 id="title-bebidas">Bebidas</h2>
+        <p class="section-desc">Refrigerantes, cervejas, destilados e mais.</p>
+      </div>
+      <div class="content">
+        <h3 style="margin:0 0 8px 0;">Cervejas (Long Neck/Garrafa)</h3>
+        <table aria-label="Cervejas Long Neck">
+          <thead><tr><th>Bebida</th><th>Preço</th></tr></thead>
+          <tbody>
+            <tr><td>SKOL</td><td class="price">R$ 6,00</td></tr>
+            <tr><td>Long neck Budweiser</td><td class="price">R$ 10,00</td></tr>
+            <tr><td>Heineken</td><td class="price">R$ 10,00</td></tr>
+            <tr><td>Stella</td><td class="price">R$ 10,00</td></tr>
+            <tr><td>Eisenbahn</td><td class="price">R$ 11,00</td></tr>
+            <tr><td>Spaten</td><td class="price">R$ 11,00</td></tr>
+            <tr><td>Corona</td><td class="price">R$ 12,00</td></tr>
+            <tr><td>Jack Coca</td><td class="price">R$ 8,00</td></tr>
+            <tr><td>Império</td><td class="price">R$ 6,00</td></tr>
+            <tr><td>Monster</td><td class="price">R$ 10,00</td></tr>
+            <tr><td>Copão Catuaba</td><td class="price">R$ 30,00</td></tr>
+            <tr><td>Copão Cavalo Branco</td><td class="price">R$ 25,00</td></tr>
+            <tr><td>Copão Black White</td><td class="price">R$ 25,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Cervejas 600 ML</h3>
+        <table aria-label="Cervejas 600 ML">
+          <thead><tr><th>Bebida</th><th>Preço</th></tr></thead>
+          <tbody>
+            <tr><td>Skol</td><td class="price">R$ 10,00</td></tr>
+            <tr><td>Brahma</td><td class="price">R$ 10,00</td></tr>
+            <tr><td>Budweiser</td><td class="price">R$ 12,00</td></tr>
+            <tr><td>Original</td><td class="price">R$ 12,00</td></tr>
+            <tr><td>Spaten</td><td class="price">R$ 12,00</td></tr>
+            <tr><td>Petra</td><td class="price">R$ 10,00</td></tr>
+            <tr><td>Heineken</td><td class="price">R$ 15,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Refrigerantes Lata</h3>
+        <table aria-label="Refrigerantes Lata">
+          <thead><tr><th>Bebida</th><th>Preço</th></tr></thead>
+          <tbody>
+            <tr><td>Coca Cola</td><td class="price">R$ 6,00</td></tr>
+            <tr><td>Fanta</td><td class="price">R$ 6,00</td></tr>
+            <tr><td>Sprite</td><td class="price">R$ 6,00</td></tr>
+            <tr><td>Guaraná</td><td class="price">R$ 6,00</td></tr>
+            <tr><td>Pepsi</td><td class="price">R$ 5,00</td></tr>
+            <tr><td>Schwepp</td><td class="price">R$ 7,00</td></tr>
+            <tr><td>Limoneta</td><td class="price">R$ 7,00</td></tr>
+            <tr><td>Tônica</td><td class="price">R$ 7,00</td></tr>
+            <tr><td>Água de coco</td><td class="price">R$ 10,00</td></tr>
+            <tr><td>Água</td><td class="price">R$ 5,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Refrigerante 1 Litro</h3>
+        <table aria-label="Refrigerante 1 Litro">
+          <thead><tr><th>Bebida</th><th>Preço</th></tr></thead>
+          <tbody>
+            <tr><td>Coca Cola</td><td class="price">R$ 8,00</td></tr>
+            <tr><td>Fanta</td><td class="price">R$ 8,00</td></tr>
+            <tr><td>Guaraná</td><td class="price">R$ 8,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Refrigerante 2 Litros</h3>
+        <table aria-label="Refrigerante 2 Litros">
+          <thead><tr><th>Bebida</th><th>Preço</th></tr></thead>
+          <tbody>
+            <tr><td>Coca Cola</td><td class="price">R$ 15,00</td></tr>
+            <tr><td>Fanta</td><td class="price">R$ 12,00</td></tr>
+            <tr><td>Guaraná</td><td class="price">R$ 12,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Whiskys e Destilados</h3>
+        <table aria-label="Whiskys e Destilados">
+          <thead><tr><th>Bebida</th><th>Preço (Litro/Dose ou Garrafa/Dose)</th></tr></thead>
+          <tbody>
+            <tr><td>Whisky Black White</td><td class="price">litro R$ 85,00 / dose R$ 8,00</td></tr>
+            <tr><td>Cavalo branco</td><td class="price">litro R$ 120,00 / dose R$ 12,00</td></tr>
+            <tr><td>Red label</td><td class="price">litro R$ 130,00 / dose R$ 13,00</td></tr>
+            <tr><td>Balantines</td><td class="price">litro R$ 150,00 / dose R$ 14,00</td></tr>
+            <tr><td>Chivas</td><td class="price">litro R$ 180,00 / dose R$ 15,00</td></tr>
+            <tr><td>Jack Daniels</td><td class="price">litro R$ 210,00 / dose R$ 17,00</td></tr>
+            <tr><td>Old par</td><td class="price">litro R$ 210,00 / dose R$ 17,00</td></tr>
+            <tr><td>Black label</td><td class="price">litro R$ 250,00 / dose R$ 20,00</td></tr>
+            <tr><td>Buchannas</td><td class="price">litro R$ 250,00 / dose R$ 20,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Gin</h3>
+        <table aria-label="Gin">
+          <thead><tr><th>Bebida</th><th>Preço (Litro/Dose ou Garrafa/Dose)</th></tr></thead>
+          <tbody>
+            <tr><td>Paramana</td><td class="price">litro R$ 180,00 / dose R$ 14,00</td></tr>
+            <tr><td>Tanqueray</td><td class="price">litro R$ 200,00 / dose R$ 17,00</td></tr>
+            <tr><td>Bombay</td><td class="price">litro R$ 200,00 / dose R$ 17,00</td></tr>
+            <tr><td>Vodka liquid</td><td class="price">litro R$ 80,00 / dose R$ 8,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Licores</h3>
+        <table aria-label="Licores">
+          <thead><tr><th>Bebida</th><th>Preço (Litro/Dose ou Garrafa/Dose)</th></tr></thead>
+          <tbody>
+            <tr><td>Fogo Paulista</td><td class="price">litro R$ 160,00 / dose R$ 8,00</td></tr>
+            <tr><td>Amareto</td><td class="price">litro R$ 150,00 / dose R$ 13,00</td></tr>
+            <tr><td>Bananinha</td><td class="price">litro R$ 70,00 / dose R$ 8,00</td></tr>
+            <tr><td>Licor 43</td><td class="price">garrafa R$ 250,00 / dose R$ 20,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Vinhos</h3>
+        <table aria-label="Vinhos">
+          <thead><tr><th>Bebida</th><th>Preço (Litro/Dose ou Garrafa/Dose)</th></tr></thead>
+          <tbody>
+            <tr><td>Pérgola</td><td class="price">litro R$ 40,00 / taça R$ 12,00</td></tr>
+            <tr><td>Rio Valle</td><td class="price">litro R$ 30,00 / taça R$ 10,00</td></tr>
+          </tbody>
+        </table>
+
+        <div style="height:14px"></div>
+        <h3 style="margin:0 0 8px 0;">Aperitivos</h3>
+        <table aria-label="Aperitivos">
+          <thead><tr><th>Bebida</th><th>Preço (Litro/Dose ou Garrafa/Dose)</th></tr></thead>
+          <tbody>
+            <tr><td>Tequila</td><td class="price">garrafa R$ 200,00 / dose R$ 18,00</td></tr>
+            <tr><td>Campari</td><td class="price">litro R$ 80,00 / dose R$ 10,00</td></tr>
+            <tr><td>Caribe</td><td class="price">garrafa R$ 40,00 / dose R$ 5,00</td></tr>
+            <tr><td>Cabaré</td><td class="price">garrafa R$ 50,00 / dose R$ 5,00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+  <footer class="container">
+    © <span id="year"></span> Seu Estabelecimento. Todos os direitos reservados.
+  </footer>
+  <div class="fab">
+    <a class="btn whatsapp" href="https://wa.me/5589981417129" target="_blank" rel="noopener">Pedir no WhatsApp</a>
+  </div>
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+</body>
+<!-- Gerado a partir dos arquivos de texto fornecidos -->
+</html>
+
